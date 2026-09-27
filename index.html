@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Flete - Shein</title>
+    <style>
+        /* Paleta de Colores Pasteles */
+        :root {
+            --bg-color: #fdfbf7; /* Blanco crema */
+            --primary: #f4c2c2; /* Rosa pastel */
+            --primary-dark: #e8a5a5;
+            --secondary: #b5eadd; /* Menta pastel */
+            --secondary-dark: #98d0c3;
+            --text-dark: #4a4a4a;
+            --card-bg: #ffffff;
+            --border-radius: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
+            border: 2px solid #f2e9e4;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #f2e9e4;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            margin-top: 10px;
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        .btn-danger {
+            background-color: #ffd6d6;
+            color: #d85a5a;
+            margin-top: 20px;
+        }
+
+        .result-box {
+            background-color: var(--secondary);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-box h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .client-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .client-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f2e9e4;
+        }
+
+        .client-item:last-child {
+            border-bottom: none;
+        }
+
+        .client-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .client-name {
+            font-weight: bold;
+        }
+
+        .client-weight {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .client-price {
+            font-weight: bold;
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #d85a5a;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🌸 Calculadora de Flete</h2>
+
+    <!-- Datos Globales del Casillero -->
+    <div class="card">
+        <div class="input-group">
+            <label for="totalInvoice">Total Factura Casillero ($):</label>
+            <input type="number" id="totalInvoice" placeholder="Ej: 45.00" step="0.01">
+        </div>
+        <div class="input-group">
+            <label for="totalWeight">Peso Total de la Caja (Lb):</label>
+            <input type="number" id="totalWeight" placeholder="Ej: 10.0" step="0.1">
+        </div>
+        <div class="result-box">
+            <p style="margin: 0 0 5px 0; font-size: 0.9rem;">Costo Base por Libra:</p>
+            <h3 id="baseRateDisplay">$0.00 / Lb</h3>
+        </div>
+    </div>
+
+    <!-- Agregar Cliente -->
+    <div class="card">
+        <div class="input-group">
+            <label for="clientName">Nombre del Cliente:</label>
+            <input type="text" id="clientName" placeholder="Ej: María Pérez">
+        </div>
+        <div class="input-group">
+            <label for="clientWeight">Peso de su ropa (Lb):</label>
+            <input type="number" id="clientWeight" placeholder="Ej: 1.5" step="0.1">
+        </div>
+        <button class="btn btn-primary" onclick="addClient()">+ Agregar Cliente</button>
+    </div>
+
+    <!-- Lista de Clientes -->
+    <div class="card">
+        <h3 style="margin-top: 0;">Lista de Cobros</h3>
+        <ul class="client-list" id="clientList">
+            <!-- Los clientes se renderizan aquí -->
+        </ul>
+        <button class="btn btn-danger" onclick="clearData()">Limpiar Todos los Datos</button>
+    </div>
+</div>
+
+<script>
+    // Variables globales
+    let clients = JSON.parse(localStorage.getItem('sheinClients')) || [];
+    let invoiceData = JSON.parse(localStorage.getItem('sheinInvoice')) || { totalInvoice: '', totalWeight: '' };
+
+    // Inicializar la app
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('totalInvoice').value = invoiceData.totalInvoice;
+        document.getElementById('totalWeight').value = invoiceData.totalWeight;
+        calculateBaseRate();
+        renderClients();
+
+        // Escuchar cambios en los inputs globales para recalcular automáticamente
+        document.getElementById('totalInvoice').addEventListener('input', updateGlobalData);
+        document.getElementById('totalWeight').addEventListener('input', updateGlobalData);
+    });
+
+    function updateGlobalData() {
+        invoiceData.totalInvoice = document.getElementById('totalInvoice').value;
+        invoiceData.totalWeight = document.getElementById('totalWeight').value;
+        localStorage.setItem('sheinInvoice', JSON.stringify(invoiceData));
+        calculateBaseRate();
+        renderClients(); // Recalcular lista si cambia la tasa base
+    }
+
+    function calculateBaseRate() {
+        const invoice = parseFloat(invoiceData.totalInvoice);
+        const weight = parseFloat(invoiceData.totalWeight);
+        
+        if (invoice > 0 && weight > 0) {
+            const baseRate = invoice / weight;
+            document.getElementById('baseRateDisplay').innerText = `$${baseRate.toFixed(2)} / Lb`;
+            return baseRate;
+        } else {
+            document.getElementById('baseRateDisplay').innerText = `$0.00 / Lb`;
+            return 0;
+        }
+    }
+
+    function addClient() {
+        const nameInput = document.getElementById('clientName');
+        const weightInput = document.getElementById('clientWeight');
+        const name = nameInput.value.trim();
+        const weight = parseFloat(weightInput.value);
+
+        if (!name || isNaN(weight) || weight <= 0) {
+            alert('Por favor ingresa un nombre y un peso válido.');
+            return;
+        }
+
+        const newClient = {
+            id: Date.now().toString(),
+            name: name,
+            weight: weight
+        };
+
+        clients.push(newClient);
+        saveClients();
+        renderClients();
+
+        // Limpiar inputs
+        nameInput.value = '';
+        weightInput.value = '';
+    }
+
+    function removeClient(id) {
+        clients = clients.filter(client => client.id !== id);
+        saveClients();
+        renderClients();
+    }
+
+    function saveClients() {
+        localStorage.setItem('sheinClients', JSON.stringify(clients));
+    }
+
+    function renderClients() {
+        const listEl = document.getElementById('clientList');
+        const baseRate = calculateBaseRate();
+        listEl.innerHTML = '';
+
+        if (clients.length === 0) {
+            listEl.innerHTML = '<li style="text-align: center; color: #888;">No hay clientes agregados.</li>';
+            return;
+        }
+
+        clients.forEach(client => {
+            const clientTotal = (client.weight * baseRate).toFixed(2);
+            
+            const li = document.createElement('li');
+            li.className = 'client-item';
+            li.innerHTML = `
+                <div class="client-info">
+                    <span class="client-name">${client.name}</span>
+                    <span class="client-weight">${client.weight} Lb x $${baseRate.toFixed(2)}</span>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <span class="client-price">$${clientTotal}</span>
+                    <button class="delete-btn" onclick="removeClient('${client.id}')">×</button>
+                </div>
+            `;
+            listEl.appendChild(li);
+        });
+    }
+
+    function clearData() {
+        if (confirm('¿Estás segura de que deseas borrar toda la información actual?')) {
+            clients = [];
+            invoiceData = { totalInvoice: '', totalWeight: '' };
+            localStorage.removeItem('sheinClients');
+            localStorage.removeItem('sheinInvoice');
+            
+            document.getElementById('totalInvoice').value = '';
+            document.getElementById('totalWeight').value = '';
+            
+            calculateBaseRate();
+            renderClients();
+        }
+    }
+</script>
+
+</body>
+</html>
