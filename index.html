@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Flete - Shein</title>
-        <link rel="manifest" href="./manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#f4c2c2">
     <link rel="apple-touch-icon" href="icon-192.png">
     <style>
         /* Paleta de Colores Pasteles */
         :root {
-            --bg-color: #fdfbf7; /* Blanco crema */
-            --primary: #f4c2c2; /* Rosa pastel */
+            --bg-color: #fdfbf7;
+            --primary: #f4c2c2;
             --primary-dark: #e8a5a5;
-            --secondary: #b5eadd; /* Menta pastel */
+            --secondary: #b5eadd;
             --secondary-dark: #98d0c3;
             --text-dark: #4a4a4a;
             --card-bg: #ffffff;
@@ -95,16 +95,6 @@
             background-color: var(--primary-dark);
         }
 
-        .btn-secondary {
-            background-color: var(--secondary);
-            margin-top: 10px;
-            color: var(--text-dark);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--secondary-dark);
-        }
-
         .btn-danger {
             background-color: #ffd6d6;
             color: #d85a5a;
@@ -179,58 +169,51 @@
 <div class="container">
     <h2>🌸 Calculadora de Flete</h2>
 
-    <!-- Datos Globales del Casillero -->
     <div class="card">
         <div class="input-group">
             <label for="totalInvoice">Total Factura Casillero ($):</label>
             <input type="number" id="totalInvoice" placeholder="Ej: 45.00" step="0.01">
         </div>
         <div class="input-group">
-            <label for="totalWeight">Peso Total de la Caja (Lb):</label>
-            <input type="number" id="totalWeight" placeholder="Ej: 10.0" step="0.1">
+            <label for="totalWeight">Peso Total de la Caja (kg):</label>
+            <input type="number" id="totalWeight" placeholder="Ej: 5.0" step="0.1">
         </div>
         <div class="result-box">
-            <p style="margin: 0 0 5px 0; font-size: 0.9rem;">Costo Base por Libra:</p>
-            <h3 id="baseRateDisplay">$0.00 / Lb</h3>
+            <p style="margin: 0 0 5px 0; font-size: 0.9rem;">Costo Base por Kilogramo:</p>
+            <h3 id="baseRateDisplay">$0.00 / kg</h3>
         </div>
     </div>
 
-    <!-- Agregar Cliente -->
     <div class="card">
         <div class="input-group">
             <label for="clientName">Nombre del Cliente:</label>
             <input type="text" id="clientName" placeholder="Ej: María Pérez">
         </div>
         <div class="input-group">
-            <label for="clientWeight">Peso de su ropa (Lb):</label>
+            <label for="clientWeight">Peso de su ropa (kg):</label>
             <input type="number" id="clientWeight" placeholder="Ej: 1.5" step="0.1">
         </div>
         <button class="btn btn-primary" onclick="addClient()">+ Agregar Cliente</button>
     </div>
 
-    <!-- Lista de Clientes -->
     <div class="card">
         <h3 style="margin-top: 0;">Lista de Cobros</h3>
         <ul class="client-list" id="clientList">
-            <!-- Los clientes se renderizan aquí -->
         </ul>
         <button class="btn btn-danger" onclick="clearData()">Limpiar Todos los Datos</button>
     </div>
 </div>
 
 <script>
-    // Variables globales
     let clients = JSON.parse(localStorage.getItem('sheinClients')) || [];
     let invoiceData = JSON.parse(localStorage.getItem('sheinInvoice')) || { totalInvoice: '', totalWeight: '' };
 
-    // Inicializar la app
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('totalInvoice').value = invoiceData.totalInvoice;
         document.getElementById('totalWeight').value = invoiceData.totalWeight;
         calculateBaseRate();
         renderClients();
 
-        // Escuchar cambios en los inputs globales para recalcular automáticamente
         document.getElementById('totalInvoice').addEventListener('input', updateGlobalData);
         document.getElementById('totalWeight').addEventListener('input', updateGlobalData);
     });
@@ -240,7 +223,7 @@
         invoiceData.totalWeight = document.getElementById('totalWeight').value;
         localStorage.setItem('sheinInvoice', JSON.stringify(invoiceData));
         calculateBaseRate();
-        renderClients(); // Recalcular lista si cambia la tasa base
+        renderClients();
     }
 
     function calculateBaseRate() {
@@ -249,10 +232,10 @@
         
         if (invoice > 0 && weight > 0) {
             const baseRate = invoice / weight;
-            document.getElementById('baseRateDisplay').innerText = `$${baseRate.toFixed(2)} / Lb`;
+            document.getElementById('baseRateDisplay').innerText = `$${baseRate.toFixed(2)} / kg`;
             return baseRate;
         } else {
-            document.getElementById('baseRateDisplay').innerText = `$0.00 / Lb`;
+            document.getElementById('baseRateDisplay').innerText = `$0.00 / kg`;
             return 0;
         }
     }
@@ -278,7 +261,6 @@
         saveClients();
         renderClients();
 
-        // Limpiar inputs
         nameInput.value = '';
         weightInput.value = '';
     }
@@ -311,7 +293,7 @@
             li.innerHTML = `
                 <div class="client-info">
                     <span class="client-name">${client.name}</span>
-                    <span class="client-weight">${client.weight} Lb x $${baseRate.toFixed(2)}</span>
+                    <span class="client-weight">${client.weight} kg x $${baseRate.toFixed(2)}</span>
                 </div>
                 <div style="display: flex; align-items: center;">
                     <span class="client-price">$${clientTotal}</span>
@@ -336,8 +318,7 @@
             renderClients();
         }
     }
-</script>
-    <script>
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
@@ -350,5 +331,6 @@
         });
     }
 </script>
+
 </body>
 </html>
