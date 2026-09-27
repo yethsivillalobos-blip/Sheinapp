@@ -168,6 +168,9 @@
 
 <div class="container">
     <h2>🌸 Calculadora de Flete</h2>
+    <button id="installBtn" class="btn btn-secondary" style="display: none; margin-bottom: 20px;">
+    📲 Instalar Aplicación
+</button>
 
     <div class="card">
         <div class="input-group">
@@ -330,6 +333,35 @@
                 });
         });
     }
+    let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Evita que el navegador muestre el aviso predeterminado de inmediato
+    e.preventDefault();
+    // Guarda el evento para dispararlo cuando se presione el botón
+    deferredPrompt = e;
+    // Hace visible el botón de instalación en la pantalla
+    installBtn.style.display = 'block';
+});
+
+installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+        // Muestra la ventana modal nativa del teléfono para instalar
+        deferredPrompt.prompt();
+        
+        // Espera a que el usuario acepte o rechace la instalación
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+            console.log('Aplicación instalada con éxito');
+        }
+        
+        // Oculta el botón y limpia la variable (el prompt solo se puede usar una vez)
+        installBtn.style.display = 'none';
+        deferredPrompt = null;
+    }
+});
 </script>
 
 </body>
