@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Flete - Shein</title>
+    
+    <!-- Etiquetas PWA -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#f4c2c2">
     <link rel="apple-touch-icon" href="icon-192.png">
+    
     <style>
         /* Paleta de Colores Pasteles */
         :root {
@@ -95,6 +98,15 @@
             background-color: var(--primary-dark);
         }
 
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+
         .btn-danger {
             background-color: #ffd6d6;
             color: #d85a5a;
@@ -168,9 +180,11 @@
 
 <div class="container">
     <h2>🌸 Calculadora de Flete</h2>
+
+    <!-- Botón de Instalación PWA (Oculto por defecto) -->
     <button id="installBtn" class="btn btn-secondary" style="display: none; margin-bottom: 20px;">
-    📲 Instalar Aplicación
-</button>
+        📲 Instalar Aplicación
+    </button>
 
     <div class="card">
         <div class="input-group">
@@ -208,6 +222,7 @@
 </div>
 
 <script>
+    // Lógica de la Calculadora
     let clients = JSON.parse(localStorage.getItem('sheinClients')) || [];
     let invoiceData = JSON.parse(localStorage.getItem('sheinInvoice')) || { totalInvoice: '', totalWeight: '' };
 
@@ -322,6 +337,29 @@
         }
     }
 
+    // Lógica del Botón de Instalación PWA
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('Aplicación instalada con éxito');
+            }
+            installBtn.style.display = 'none';
+            deferredPrompt = null;
+        }
+    });
+
+    // Registro del Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
@@ -333,35 +371,6 @@
                 });
         });
     }
-    let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    // Evita que el navegador muestre el aviso predeterminado de inmediato
-    e.preventDefault();
-    // Guarda el evento para dispararlo cuando se presione el botón
-    deferredPrompt = e;
-    // Hace visible el botón de instalación en la pantalla
-    installBtn.style.display = 'block';
-});
-
-installBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-        // Muestra la ventana modal nativa del teléfono para instalar
-        deferredPrompt.prompt();
-        
-        // Espera a que el usuario acepte o rechace la instalación
-        const { outcome } = await deferredPrompt.userChoice;
-        
-        if (outcome === 'accepted') {
-            console.log('Aplicación instalada con éxito');
-        }
-        
-        // Oculta el botón y limpia la variable (el prompt solo se puede usar una vez)
-        installBtn.style.display = 'none';
-        deferredPrompt = null;
-    }
-});
 </script>
 
 </body>
